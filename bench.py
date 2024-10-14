@@ -10,7 +10,7 @@ from model import GPTConfig, GPT
 
 # -----------------------------------------------------------------------------
 batch_size = 12
-block_size = 1024
+block_size = 1024  #MJ: ==the length of the sequence
 bias = False
 real_data = True
 seed = 1337

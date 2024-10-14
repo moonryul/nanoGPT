@@ -20,8 +20,33 @@ seed = 1337
 device = 'cuda' # examples: 'cpu', 'cuda', 'cuda:0', 'cuda:1', etc.
 dtype = 'bfloat16' if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else 'float16' # 'float32' or 'bfloat16' or 'float16'
 compile = False # use PyTorch 2.0 to compile the model to be faster
-exec(open('configurator.py').read()) # overrides from command line or config file
-# -----------------------------------------------------------------------------
+
+
+try:
+    # Check if file exists before trying to open
+    file_path = 'configurator.py'
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File {file_path} not found!")
+
+    # Open and read the file
+    with open(file_path, 'r') as file:
+        content = file.read()
+
+    print("File opened and read successfully. Now executing the content...")
+    
+    # Execute the content of the file
+    exec(content) #MJ=> HERE sys.argv=['/mount/yeol_backup/moon/nanoGPT/sample.py', '--out_dir', 'out-shakespeare-char']
+
+except FileNotFoundError as fnf_error:
+    print(f"File not found error: {fnf_error}")
+
+except AssertionError as assertion_error:
+    print(f"AssertionError occurred: {assertion_error}")
+
+except Exception as e:
+    # Catch all other exceptions
+    print(f"An error occurred: {e}")
+    
 
 torch.manual_seed(seed)
 torch.cuda.manual_seed(seed)
@@ -74,6 +99,8 @@ else:
     decode = lambda l: enc.decode(l)
 
 # encode the beginning of the prompt
+#MJ: ```python sample.py --start=FILE:prompt.txt```.
+
 if start.startswith('FILE:'):
     with open(start[5:], 'r', encoding='utf-8') as f:
         start = f.read()
